@@ -10,6 +10,17 @@ sudo apt install /tmp/libuv1_1.8.0-1_amd64.deb
 sudo apt install /tmp/libuv1-dev_1.8.0-1_amd64.deb
 sudo apt install /tmp/libuv1-dbg_1.8.0-1_amd64.deb
 sudo apt-get install -y dist-upgrade
+
+# ipopt
+sudo apt-get install -y gfortran unzip
+wget https://www.coin-or.org/download/source/Ipopt/Ipopt-3.12.7.zip
+unzip Ipopt-3.12.7.zip
+rm Ipopt-3.12.7.zip
+sudo ./install_ipopt.sh
+
+# CppAD
+sudo apt-get install -y cppad
+
 git clone https://github.com/uWebSockets/uWebSockets
 cd uWebSockets
 git checkout e94b6e1
