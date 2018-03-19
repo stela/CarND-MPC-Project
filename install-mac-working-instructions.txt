@@ -1,3 +1,5 @@
+Follow both instructions in install-mac.sh and this file.
+
 Copy of Slack post https://carnd.slack.com/archives/C54DV4BK6/p1518662015000011?thread_ts=1515553894.000053&cid=C54DV4BK6
 
 Matheus Souza [1 month ago]
