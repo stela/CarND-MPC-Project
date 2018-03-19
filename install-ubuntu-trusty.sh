@@ -9,7 +9,6 @@ wget -P /tmp https://mirrors.kernel.org/ubuntu/pool/universe/libu/libuv1/libuv1-
 sudo apt install /tmp/libuv1_1.8.0-1_amd64.deb
 sudo apt install /tmp/libuv1-dev_1.8.0-1_amd64.deb
 sudo apt install /tmp/libuv1-dbg_1.8.0-1_amd64.deb
-sudo apt-get -y dist-upgrade
 
 # ipopt
 sudo apt-get install -y gfortran unzip
