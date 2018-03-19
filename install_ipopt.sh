@@ -1,7 +1,7 @@
 # Pass the Ipopt source directory as the first argument
 if [ -z $1 ]
 then
-    echo "Specifiy the location of the Ipopt source directory in the first argument."
+    echo "Specify the location of the Ipopt source directory in the first argument."
     exit
 fi
 cd $1
