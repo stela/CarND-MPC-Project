@@ -1,0 +1,23 @@
+Copy of Slack post https://carnd.slack.com/archives/C54DV4BK6/p1518662015000011?thread_ts=1515553894.000053&cid=C54DV4BK6
+
+Matheus Souza [1 month ago]
+Hi @Michael Virgo! Thank you for your help.
+I've taken some extra steps to solve this problem. I'm sending here, maybe I'll help other students. There were steps *5.1* and *8.1*
+
+1. First, make sure Xcode is up-to-date on your Mac.
+2. Enter `export HOMEBREW_NO_AUTO_UPDATE=0` to reset homebrew to allow for updates. Then, `brew update`.
+3. Then, run `brew uninstall ipopt` in case it's somewhere on your computer.
+4. Next, run `brew install ruby`. If it's already there, run `brew upgrade ruby`.
+5. `cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-science` ​ (or your own related directory).
+   If your directory has already been migrated to homebrew-core, follow the step *5.1*:
+5.1 `cd /usr/local/Homebrew/Library/Taps/homebrew` execute
+    `git clone https://github.com/Homebrew/homebrew-science.git` , and then
+    `cd homebrew-science` .
+    Instead of performing step *8*, run *8.1*
+6. `git checkout 19f75951641d3a5e70ea105f76a6a77bc0553d07`
+7. `export HOMEBREW_NO_AUTO_UPDATE=1`
+8. `cd ..` (You should now be back into the main `homebrew` directory instead of homebrew-science)
+8.1 `cd ../..` (You should now be back into the main `/usr/local/Homebrew/Library/Taps` directory instead of homebrew-science)
+9. `git checkout 93a2e9fc25407b049d594ad2da112a5cb8bdf5c3`
+10. `brew tap homebrew/science`
+11. `brew install ipopt --with-openblas`
