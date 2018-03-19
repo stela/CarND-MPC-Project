@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/stela/CarND-MPC-Project.svg?branch=master)](https://travis-ci.org/stela/CarND-MPC-Project)
+
 # CarND-Controls-MPC
 Self-Driving Car Engineer Nanodegree Program
 
