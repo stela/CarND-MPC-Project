@@ -18,7 +18,10 @@ rm Ipopt-3.12.7.zip
 sudo ./install_ipopt.sh Ipopt-3.12.7
 
 # CppAD
-sudo apt-get install -y cppad
+wget -P /tmp https://mirrors.kernel.org/ubuntu/pool/universe/c/cppad/cppad_2016.00.00.1-1_all.deb
+sudo apt install /tmp/cppad_2016.00.00.1-1_all.deb
+# Starting with Ubuntu xenial, just apt-get install it
+# sudo apt-get install -y cppad
 
 git clone https://github.com/uWebSockets/uWebSockets
 cd uWebSockets
