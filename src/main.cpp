@@ -33,7 +33,7 @@ string hasData(string s) {
   return "";
 }
 
-// Evaluate a polynomial.
+// Evaluate a polynomial. From "Lesson 19 Vehicle Models - 8. Fitting polynomials"
 double polyeval(Eigen::VectorXd coeffs, double x) {
   double result = 0.0;
   for (int i = 0; i < coeffs.size(); i++) {
@@ -42,11 +42,11 @@ double polyeval(Eigen::VectorXd coeffs, double x) {
   return result;
 }
 
-// Fit a polynomial.
+// Fit a polynomial. From "Lesson 19 Vehicle Models - 8. Fitting polynomials"
 // Adapted from
 // https://github.com/JuliaMath/Polynomials.jl/blob/master/src/Polynomials.jl#L676-L716
 Eigen::VectorXd polyfit(const Eigen::VectorXd &xvals, const Eigen::VectorXd &yvals,
-                        int order) {
+                        const int order) {
   assert(xvals.size() == yvals.size());
   assert(order >= 1 && order <= xvals.size() - 1);
   Eigen::MatrixXd A(xvals.size(), order + 1);
@@ -152,6 +152,8 @@ int main() {
             }
           }
 
+          // TODO redundant, in MPC.cpp too
+          // Lf is front half of wheelbase, distance from center of gravity to front axle
           double Lf = 2.67;
 
           json msgJson;

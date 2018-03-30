@@ -5,9 +5,11 @@
 
 using CppAD::AD;
 
-// TODO: Set the timestep length and duration
-size_t N = 0;
-double dt = 0;
+// Second ahead and 10x/s reaction seems a bit like a human driver
+size_t N = 10;
+double dt = 0.1;
+
+
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -118,4 +120,17 @@ vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &c
   // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
   // creates a 2 element double vector.
   return {};
+}
+
+// From "Lesson 19: Vehicle models - 6. Solution: Global Kinematic Model"
+Eigen::VectorXd MPC::globalKinematic(const Eigen::VectorXd &state,
+                                     const Eigen::VectorXd &actuators, const double dt) {
+  Eigen::VectorXd next_state(state.size());
+
+  next_state[0] = state[0] + state[3] * cos(state[2])*dt;
+  next_state[1] = state[1] + state[3] * sin(state[2])*dt;
+  next_state[2] = state[2] + state[3]/Lf *actuators[0]*dt;
+  next_state[3] = state[3] + actuators[1]*dt;
+
+  return next_state;
 }
