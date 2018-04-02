@@ -18,7 +18,7 @@ class MPC {
 
   // Returns a new predicted future state vector given current state, actuators to apply and duration
   Eigen::VectorXd globalKinematic(const Eigen::VectorXd &state,
-                                       const Eigen::VectorXd &actuators, double dt);
+                                  const Eigen::VectorXd &actuators, double dt);
 };
 
 #endif /* MPC_H */
