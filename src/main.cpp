@@ -88,17 +88,18 @@ int main() {
           // j[1] is the data JSON object
           vector<double> ptsx = j[1]["ptsx"];
           vector<double> ptsy = j[1]["ptsy"];
-          double px = j[1]["x"];
-          double py = j[1]["y"];
-          double psi = j[1]["psi"];
-          double v = j[1]["speed"];
+          const double px = j[1]["x"];
+          const double py = j[1]["y"];
+          const double psi = j[1]["psi"];
+          const double v = j[1]["speed"];
 
           for (int i = 0; i < ptsx.size(); i++) {
             // shift car reference angle to 90 degrees
             double shift_x = ptsx[i]-px;
             double shift_y = ptsy[i]-py;
 
-            // rotates car to make psi zero
+            // rotates and translates waypoints (and the car) to make psi zero, x=0, y=0
+            // in order to simplify later processing
             ptsx[i] = (shift_x * cos(0-psi) - shift_y * sin(0-psi));
             ptsy[i] = (shift_x * sin(0-psi) - shift_y * cos(0-psi));
           }
@@ -117,8 +118,9 @@ int main() {
           double cte = polyeval(coeffs, 0);
           double epsi = -atan(coeffs[1]);
 
-          double steer_value = j[1]["steering angle"];
-          double throttle_value = j[1]["throttle"];
+          // TODO discard simulator-provided steering and throttle values?
+          const double delta = j[1]["steering angle"];
+          const double a = j[1]["throttle"];
 
           // state.{x,y,theta} == 0 due to earlier transformations
           Eigen::VectorXd state(6);
@@ -166,9 +168,6 @@ int main() {
           // the points in the simulator are connected by a Green line
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
-
-          msgJson["next_x"] = next_x_vals;
-          msgJson["next_u"] = next_y_vals;
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
