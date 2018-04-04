@@ -137,6 +137,7 @@ MPC::~MPC() = default;
 
 vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &coeffs) {
   bool ok = true;
+  // TODO remove redundant i declaration? Or is it there for compatibility???
   size_t i;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
@@ -147,9 +148,9 @@ vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &c
   //
   // we have 6 state variables, 2 actuators, N=10 state-timesteps, and N-1 actuator-timesteps
   const size_t n_vars = 6 * N + 2 * (N - 1);
-  // 2 constraints, steering angle delta [-25 degrees tp +25 degrees,
+  // 6 constraints below, non-actuators finite, steering angle delta [-25 degrees tp +25 degrees,
   // and accelerator [-1, +1]
-  const size_t n_constraints = 2;
+  const size_t n_constraints = N * 6;
 
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
@@ -162,6 +163,43 @@ vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &c
   Dvector vars_upperbound(n_vars);
   // TODO: Set lower and upper limits for variables.
 
+  const double x = state[0];
+  const double y = state[1];
+  const double psi = state[2];
+  const double v = state[3];
+  const double cte = state[4];
+  const double epsi = state[5];
+
+  // Set the initial variable values
+  vars[x_start] = x;
+  vars[y_start] = y;
+  vars[psi_start] = psi;
+  vars[v_start] = v;
+  vars[cte_start] = cte;
+  vars[epsi_start] = epsi;
+
+  // Set all non-actuators upper and lowerlimits
+  // to the max negative and positive values.
+  for (int i = 0; i < delta_start; i++) {
+    vars_lowerbound[i] = -1.0e19;
+    vars_upperbound[i] = 1.0e19;
+  }
+
+  // The upper and lower limits of delta are set to -25 and 25
+  // degrees (values in radians).
+  // NOTE: Feel free to change this to something else.
+  for (int i = delta_start; i < a_start; i++) {
+    vars_lowerbound[i] = -0.436332;
+    vars_upperbound[i] = 0.436332;
+  }
+
+  // Acceleration/decceleration upper and lower limits.
+  // NOTE: Feel free to change this to something else.
+  for (int i = a_start; i < n_vars; i++) {
+    vars_lowerbound[i] = -1.0;
+    vars_upperbound[i] = 1.0;
+  }
+
   // Lower and upper limits for the constraints
   // Should be 0 besides initial state.
   Dvector constraints_lowerbound(n_constraints);
@@ -170,6 +208,21 @@ vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &c
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
+
+  constraints_lowerbound[x_start] = x;
+  constraints_lowerbound[y_start] = y;
+  constraints_lowerbound[psi_start] = psi;
+  constraints_lowerbound[v_start] = v;
+  constraints_lowerbound[cte_start] = cte;
+  constraints_lowerbound[epsi_start] = epsi;
+
+  constraints_upperbound[x_start] = x;
+  constraints_upperbound[y_start] = y;
+  constraints_upperbound[psi_start] = psi;
+  constraints_upperbound[v_start] = v;
+  constraints_upperbound[cte_start] = cte;
+  constraints_upperbound[epsi_start] = epsi;
+
 
   // object that computes objective and constraints
   FG_eval fg_eval(coeffs);
@@ -207,13 +260,21 @@ vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &c
   auto cost = solution.obj_value;
   std::cout << "Cost " << cost << std::endl;
 
-  // TODO: Return the first actuator values. The variables can be accessed with
+  // Return the first actuator values. The variables can be accessed with
   // `solution.x[i]`.
   //
   // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
   // creates a 2 element double vector.
-  return {};
-}
+  vector<double> result = {
+      solution.x[delta_start], solution.x[a_start]
+  };
+
+  for (unsigned int i = 0; i < N; i++) {
+    result.push_back(solution.x[x_start + i]);
+    result.push_back(solution.x[y_start + i]);
+  }
+
+  return result;}
 
 // From "Lesson 19: Vehicle models - 6. Solution: Global Kinematic Model"
 Eigen::VectorXd MPC::globalKinematic(const Eigen::VectorXd &state,
