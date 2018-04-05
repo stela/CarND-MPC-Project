@@ -119,7 +119,7 @@ int main() {
           double epsi = -atan(coeffs[1]);
 
           // TODO discard simulator-provided steering and throttle values?
-          const double delta = j[1]["steering angle"];
+          const double delta = j[1]["steering_angle"];
           const double a = j[1]["throttle"];
 
           // state.{x,y,theta} == 0 due to earlier transformations
