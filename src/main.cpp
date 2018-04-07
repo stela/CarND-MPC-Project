@@ -154,13 +154,9 @@ int main() {
             }
           }
 
-          // TODO redundant, in MPC.cpp too
-          // Lf is front half of wheelbase, distance from center of gravity to front axle
-          double Lf = 2.67;
-
           json msgJson;
 
-          msgJson["steering_angle"] = vars[0]/deg2rad(25) * Lf;
+          msgJson["steering_angle"] = vars[0]/deg2rad(25);
           msgJson["throttle"] = vars[1];
 
 
