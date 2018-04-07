@@ -101,7 +101,7 @@ int main() {
             // rotates and translates waypoints (and the car) to make psi zero, x=0, y=0
             // in order to simplify later processing
             ptsx[i] = (shift_x * cos(0-psi) - shift_y * sin(0-psi));
-            ptsy[i] = (shift_x * sin(0-psi) - shift_y * cos(0-psi));
+            ptsy[i] = (shift_x * sin(0-psi) + shift_y * cos(0-psi));
           }
           // TODO better if the (inserted) delay is dealt with
 
