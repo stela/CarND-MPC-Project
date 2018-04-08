@@ -46,6 +46,10 @@ The given waypoints, together with the car's coordinates implicitly, are transfo
 
 The latency is taken into account by shifting the delta and a actuators one timestamp entry, see [FG_eval::operator()](src/MPC.cpp#L105-L108) in MPC.cpp. 
 
+## Simulation - Drive a Lap
+
+The car successfully drives more than a lap on the track. It stays farly well centered on the waypoints given. The speed could probably be increased quite a bit and still stay between the curbs, at the cost of driving a bit further off-center.
+
 
 ## Building the Code
 See the [original README](README-original.md).
