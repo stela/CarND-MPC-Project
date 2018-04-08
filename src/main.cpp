@@ -15,8 +15,8 @@ using json = nlohmann::json;
 
 // For converting back and forth between radians and degrees.
 constexpr double pi() { return M_PI; }
-double deg2rad(double x) { return x * pi() / 180; }
-double rad2deg(double x) { return x * 180 / pi(); }
+constexpr double deg2rad(double x) { return x * pi() / 180; }
+constexpr double rad2deg(double x) { return x * 180 / pi(); }
 
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
@@ -78,7 +78,7 @@ int main() {
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
     string sdata = string(data).substr(0, length);
-    cout << sdata << endl;
+    // cout << sdata << endl;
     if (sdata.size() > 2 && sdata[0] == '4' && sdata[1] == '2') {
       string s = hasData(sdata);
       if (!s.empty()) {
@@ -118,9 +118,9 @@ int main() {
           double cte = polyeval(coeffs, 0);
           double epsi = -atan(coeffs[1]);
 
-          // TODO discard simulator-provided steering and throttle values?
-          const double delta = j[1]["steering_angle"];
-          const double a = j[1]["throttle"];
+          // discarding simulator-provided steering and throttle values for now
+          // double delta = j[1]["steering_angle"];
+          // double a = j[1]["throttle"];
 
           // state.{x,y,theta} == 0 due to earlier transformations
           Eigen::VectorXd state(6);
@@ -170,7 +170,7 @@ int main() {
 
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+          // std::cout << msg << std::endl;
           // Latency
           // The purpose is to mimic real driving conditions where
           // the car does actuate the commands instantly.

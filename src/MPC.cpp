@@ -48,6 +48,7 @@ class FG_eval {
     // NOTE: You'll probably go back and forth between this function and
     // the Solver function below.
 
+    // From "Lesson 20: Model Predictive Control - 9. Solution: Mind The Line"
     // fg[0] accumulates the cost
     fg[0] = 0;
 
@@ -81,24 +82,30 @@ class FG_eval {
     fg[1 + cte_start] = vars[cte_start];
     fg[1 + epsi_start] = vars[epsi_start];
 
+    // From "Lesson 20: Model Predictive Control - 8. Mind The Line"
+    // and "Lesson 20: Model Predictive Control - 9. Solution: Mind The Line"
     // The rest of the constraints
     for (int t = 1; t < N; t++) {
+      // State at time t+1
       const AD<double> x1 = vars[x_start + t];
-      const AD<double> x0 = vars[x_start + t - 1];
       const AD<double> y1 = vars[y_start + t];
-      const AD<double> y0 = vars[y_start + t - 1];
       const AD<double> psi1 = vars[psi_start + t];
-      const AD<double> psi0 = vars[psi_start + t - 1];
       const AD<double> v1 = vars[v_start + t];
-      const AD<double> v0 = vars[v_start + t - 1];
       const AD<double> cte1 = vars[cte_start + t];
-      const AD<double> cte0 = vars[cte_start + t - 1];
       const AD<double> epsi1 = vars[epsi_start + t];
+
+      // State at time t
+      const AD<double> x0 = vars[x_start + t - 1];
+      const AD<double> y0 = vars[y_start + t - 1];
+      const AD<double> psi0 = vars[psi_start + t - 1];
+      const AD<double> v0 = vars[v_start + t - 1];
+      const AD<double> cte0 = vars[cte_start + t - 1];
       const AD<double> epsi0 = vars[epsi_start + t - 1];
+
       // skip an entry to compensate for the 100ms latency, but don't peek outside buffer
       size_t latency_compensation = t > 1 ? 1 : 0;
-      const AD<double> a = vars[a_start + t - 1 - latency_compensation];
       const AD<double> delta = vars[delta_start + t - 1 - latency_compensation];
+      const AD<double> a = vars[a_start + t - 1 - latency_compensation];
 
       const AD<double> f0 =
           coeffs[0] +
@@ -111,19 +118,13 @@ class FG_eval {
                       2 * coeffs[2] * x0 +
                       3 * coeffs[3] * CppAD::pow(x0, 2));
 
-      // Here's `x` to get you started.
       // The idea here is to constraint this value to be 0.
-      //
-      // NOTE: The use of `AD<double>` and use of `CppAD`!
-      // This is also CppAD can compute derivatives and pass
-      // these to the solver.
-
       fg[1 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
       fg[1 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
-      fg[1 + psi_start + t] = psi1 - (psi0 - v0/Lf * delta * dt);
+      fg[1 + psi_start + t] = psi1 - (psi0 - v0 * delta / Lf * dt);
       fg[1 + v_start + t] = v1 - (v0 + a * dt);
       fg[1 + cte_start + t] = cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
-      fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) - v0/Lf * delta * dt);
+      fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) - v0 * delta / Lf * dt);
     }
   }
 };
@@ -137,11 +138,9 @@ MPC::~MPC() = default;
 
 vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &coeffs) {
   bool ok = true;
-  // TODO remove redundant i declaration? Or is it there for compatibility???
-  size_t i;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
-  // TODO: Set the number of model variables (includes both states and inputs).
+  // Sets the number of model variables (includes both states and inputs).
   // For example: If the state is a 4 element vector, the actuators is a 2
   // element vector and there are 10 timesteps. The number of variables is:
   // 4 * 10 + 2 * 9
@@ -161,8 +160,8 @@ vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &c
 
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
-  // TODO: Set lower and upper limits for variables.
 
+  // From "Lesson 20: Model Predictive Control - 8. Mind The Line"
   const double x = state[0];
   const double y = state[1];
   const double psi = state[2];
@@ -274,17 +273,5 @@ vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &c
     result.push_back(solution.x[y_start + i]);
   }
 
-  return result;}
-
-// From "Lesson 19: Vehicle models - 6. Solution: Global Kinematic Model"
-Eigen::VectorXd MPC::globalKinematic(const Eigen::VectorXd &state,
-                                     const Eigen::VectorXd &actuators, const double dt) {
-  Eigen::VectorXd next_state(state.size());
-
-  next_state[0] = state[0] + state[3] * cos(state[2])*dt;
-  next_state[1] = state[1] + state[3] * sin(state[2])*dt;
-  next_state[2] = state[2] + state[3]/Lf *actuators[0]*dt;
-  next_state[3] = state[3] + actuators[1]*dt;
-
-  return next_state;
+  return result;
 }
